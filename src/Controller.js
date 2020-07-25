@@ -8,13 +8,13 @@ export default function Controller({ goNext, goPrv }) {
       <MaterialIcons
         name="skip-previous"
         onPress={() => goPrv()}
-        size={24}
+        size={50}
         color="black"
       />
-      <MaterialIcons name="pause" size={24} color="black" />
+      <MaterialIcons name="pause" size={50} color="black" />
       <MaterialIcons
         name="skip-next"
-        size={24}
+        size={50}
         color="black"
         onPress={() => goNext()}
       />
