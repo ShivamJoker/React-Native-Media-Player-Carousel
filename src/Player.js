@@ -59,6 +59,9 @@ export default function Player() {
 
     console.log(prvScrollX.current, scrX);
 
+    // // stop app from crashing
+    // if (songIndex === songs.length - 1 || songIndex === -1) return;
+
     // we will only change index if user has changed the card
     // storing prv scroll data to keep track of it
     if (scrX !== prvScrollX.current) {
