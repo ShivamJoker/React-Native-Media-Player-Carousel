@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Music-Player",
-    "slug": "Music-Player",
+    "name": "Music-Player-Carousel",
+    "slug": "music-player-slider",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,6 +21,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Music player ui in react native"
   }
 }

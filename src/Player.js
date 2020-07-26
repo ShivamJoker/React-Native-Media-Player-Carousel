@@ -16,88 +16,112 @@ import Controller from "./Controller";
 const { width, height } = Dimensions.get("window");
 
 export default function Player() {
-  const scrollX = useRef(0);
-  const prvScrollX = useRef(0);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollXcur = useRef(0);
 
   const albumList = useRef(null);
   const [songIndex, setSongIndex] = useState(0);
 
-  useEffect(() => {
-    console.log(songIndex);
-  }, [songIndex]);
+  const position = useRef(Animated.divide(scrollX, width)).current;
+  const currentPosition = useRef(0);
 
-  const renderItem = ({ item }) => {
-    return (
-      <View style={{ alignItems: "center", width: width }}>
-        <Image source={item.image} style={{ width: 320, height: 320 }} />
-      </View>
-    );
-  };
+  useEffect(() => {
+    position.addListener(({ value }) => {
+      console.log(value);
+    });
+
+    scrollX.addListener(({ value }) => {
+      scrollXcur.current = value;
+      const val = Math.round(value / width);
+
+
+      //if previous index is not same then only update it
+      if (val !== songIndex) {
+        setSongIndex(val);
+      }
+
+    });
+
+    return ()=>{
+      scrollX.removeAllListeners()
+    }
+  }, []);
+
   const goNext = () => {
+    console.log(scrollXcur);
     albumList.current.scrollToOffset({
-      offset: scrollX.current + width,
+      offset: scrollXcur.current + width,
       animated: true,
     });
     // stop index from exeeding max length
     if (songIndex === songs.length - 1) return;
-    setSongIndex((prv) => prv + 1);
+    // setSongIndex((prv) => prv + 1);
   };
+
   const goPrv = () => {
     albumList.current.scrollToOffset({
-      offset: scrollX.current - width,
+      offset: scrollXcur.current - width,
       animated: true,
     });
     // stop songindex from going below 0
     if (songIndex === 0) return;
-    setSongIndex((prv) => prv - 1);
+    // setSongIndex((prv) => prv - 1);
   };
 
   // we will fire this function when user stops swiping
-  const onScrollEnd = () => {
-    // round scrollX to make sure everything matches
-    const scrX = Math.round(scrollX.current);
+  const onScrollEnd = ({ nativeEvent }) => {
+    // console.log("Scroll ended with position", scrollXcur);
+  };
 
-    console.log(prvScrollX.current, scrX);
-
-    // // stop app from crashing
-    // if (songIndex === songs.length - 1 || songIndex === -1) return;
-
-    // we will only change index if user has changed the card
-    // storing prv scroll data to keep track of it
-    if (scrX !== prvScrollX.current) {
-      console.log("user changed music");
-      if (scrX < prvScrollX.current) {
-        //right swipe
-        // if prvScroll is > currentscroll then its left swipe else its right
-        setSongIndex((prv) => prv - 1); // dec index on left swipe
-      } else {
-        // left swipe
-        setSongIndex((prv) => prv + 1); // inc index on right swipe
-      }
-      // update the new data in prv scroll
-      prvScrollX.current = scrX;
-    }
+  const renderItem = ({ index, item }) => {
+    // console.log(Animated.multiply(Animated.add(position, -index), -100));
+    return (
+      <Animated.View
+        style={{
+          alignItems: "center",
+          width: width,
+          transform: [
+            {
+              translateX: Animated.multiply(
+                Animated.add(position, -index),
+                -100
+              ),
+            },
+          ],
+        }}
+      >
+        <Animated.Image
+          source={item.image}
+          style={{ width: 320, height: 320 }}
+        />
+      </Animated.View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <SafeAreaView style={{height: 320}}>
-        <FlatList
+      <SafeAreaView style={{ height: 320 }}>
+        <Animated.FlatList
           ref={albumList}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={60}
+          scrollEventThrottle={16}
           data={songs}
           renderItem={renderItem}
+          onScrollEndDrag={onScrollEnd}
           keyExtractor={(item) => item.id}
-          onMomentumScrollEnd={() => onScrollEnd()}
-          onScroll={(e) => {
-            scrollX.current = e.nativeEvent.contentOffset.x;
-          }}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: true }
+          )}
         />
       </SafeAreaView>
-      <Text style={styles.title}>{songs[songIndex].title}</Text>
+      <View>
+        <Text style={styles.title}>{songs[songIndex].title}</Text>
+        <Text style={styles.artist}>{songs[songIndex].artist}</Text>
+      </View>
+
       <Controller goNext={goNext} goPrv={goPrv} />
     </SafeAreaView>
   );
@@ -106,6 +130,11 @@ export default function Player() {
 const styles = StyleSheet.create({
   title: {
     fontSize: 28,
+    textAlign: "center",
+    textTransform: "capitalize",
+  },
+  artist: {
+    fontSize: 18,
     textAlign: "center",
     textTransform: "capitalize",
   },
