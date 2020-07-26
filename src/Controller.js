@@ -1,23 +1,24 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableHighlight,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Controller({ goNext, goPrv }) {
   return (
     <View style={styles.container}>
-      <MaterialIcons
-        name="skip-previous"
-        onPress={() => goPrv()}
-        size={45}
-        color="black"
-      />
+      <TouchableOpacity onPress={() => goPrv()}>
+        <MaterialIcons name="skip-previous" size={45} color="black" />
+      </TouchableOpacity>
+
       <MaterialIcons name="pause" size={45} color="black" />
-      <MaterialIcons
-        name="skip-next"
-        size={45}
-        color="black"
-        onPress={() => goNext()}
-      />
+      <TouchableOpacity onPress={() => goNext()}>
+        <MaterialIcons name="skip-next" size={45} color="black" />
+      </TouchableOpacity>
     </View>
   );
 }

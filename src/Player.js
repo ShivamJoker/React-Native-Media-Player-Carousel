@@ -26,36 +26,36 @@ export default function Player() {
   const currentPosition = useRef(0);
 
   useEffect(() => {
-    position.addListener(({ value }) => {
-      console.log(value);
-    });
+    // position.addListener(({ value }) => {
+    //   console.log(value);
+    // });
 
     scrollX.addListener(({ value }) => {
       scrollXcur.current = value;
       const val = Math.round(value / width);
 
+      setSongIndex(val);
 
+      // little buggy
       //if previous index is not same then only update it
-      if (val !== songIndex) {
-        setSongIndex(val);
-      }
-
+      // if (val !== songIndex) {
+      //   setSongIndex(val);
+      //   console.log(val);
+      // }
     });
 
-    return ()=>{
-      scrollX.removeAllListeners()
-    }
+    return () => {
+      scrollX.removeAllListeners();
+    };
   }, []);
 
   const goNext = () => {
-    console.log(scrollXcur);
+
     albumList.current.scrollToOffset({
       offset: scrollXcur.current + width,
       animated: true,
     });
-    // stop index from exeeding max length
-    if (songIndex === songs.length - 1) return;
-    // setSongIndex((prv) => prv + 1);
+
   };
 
   const goPrv = () => {
@@ -63,9 +63,7 @@ export default function Player() {
       offset: scrollXcur.current - width,
       animated: true,
     });
-    // stop songindex from going below 0
-    if (songIndex === 0) return;
-    // setSongIndex((prv) => prv - 1);
+
   };
 
   // we will fire this function when user stops swiping
@@ -92,7 +90,7 @@ export default function Player() {
       >
         <Animated.Image
           source={item.image}
-          style={{ width: 320, height: 320 }}
+          style={{ width: 320, height: 320, borderRadius: 5 }}
         />
       </Animated.View>
     );
