@@ -66,13 +66,9 @@ export default function Player() {
 
   };
 
-  // we will fire this function when user stops swiping
-  const onScrollEnd = ({ nativeEvent }) => {
-    // console.log("Scroll ended with position", scrollXcur);
-  };
 
   const renderItem = ({ index, item }) => {
-    // console.log(Animated.multiply(Animated.add(position, -index), -100));
+
     return (
       <Animated.View
         style={{
@@ -107,7 +103,6 @@ export default function Player() {
           scrollEventThrottle={16}
           data={songs}
           renderItem={renderItem}
-          onScrollEndDrag={onScrollEnd}
           keyExtractor={(item) => item.id}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
