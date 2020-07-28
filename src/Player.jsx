@@ -17,13 +17,12 @@ const { width, height } = Dimensions.get("window");
 
 export default function Player() {
   const scrollX = useRef(new Animated.Value(0)).current;
-  const scrollXcur = useRef(0);
 
-  const albumList = useRef(null);
+  const slider = useRef(null);
   const [songIndex, setSongIndex] = useState(0);
 
+  // for tranlating the album art
   const position = useRef(Animated.divide(scrollX, width)).current;
-  const currentPosition = useRef(0);
 
   useEffect(() => {
     // position.addListener(({ value }) => {
@@ -31,7 +30,6 @@ export default function Player() {
     // });
 
     scrollX.addListener(({ value }) => {
-      scrollXcur.current = value;
       const val = Math.round(value / width);
 
       setSongIndex(val);
@@ -50,25 +48,17 @@ export default function Player() {
   }, []);
 
   const goNext = () => {
-
-    albumList.current.scrollToOffset({
-      offset: scrollXcur.current + width,
-      animated: true,
+    slider.current.scrollToOffset({
+      offset: (songIndex + 1) * width,
     });
-
   };
-
   const goPrv = () => {
-    albumList.current.scrollToOffset({
-      offset: scrollXcur.current - width,
-      animated: true,
+    slider.current.scrollToOffset({
+      offset: (songIndex - 1) * width,
     });
-
   };
-
 
   const renderItem = ({ index, item }) => {
-
     return (
       <Animated.View
         style={{
@@ -96,7 +86,7 @@ export default function Player() {
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={{ height: 320 }}>
         <Animated.FlatList
-          ref={albumList}
+          ref={slider}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
@@ -115,7 +105,7 @@ export default function Player() {
         <Text style={styles.artist}>{songs[songIndex].artist}</Text>
       </View>
 
-      <Controller goNext={goNext} goPrv={goPrv} />
+      <Controller onNext={goNext} onPrv={goPrv} />
     </SafeAreaView>
   );
 }
@@ -132,10 +122,8 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
   },
   container: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: height - 200,
-    marginTop: 50,
-    marginBottom: 50,
+    justifyContent: "space-evenly",
+    height: height,
+    maxHeight: 500,
   },
 });
